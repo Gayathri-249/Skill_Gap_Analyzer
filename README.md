@@ -434,7 +434,7 @@ Potential improvements include:
 
 ## Author
 
-**Developed by:** G. Gayathri
+**Developed by:** S. Gayathri
 
 **Project:** SkillNova — AI-Powered Skill Gap Analyzer and Personalized Learning Recommendation System
 
