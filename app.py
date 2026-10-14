@@ -2,6 +2,10 @@
 import os
 from io import BytesIO
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from flask import (
     Flask,
     jsonify,
@@ -25,10 +29,13 @@ from pdf_report import build_pdf_report
 app = Flask(__name__)
 
 # Flask session configuration
-app.config["SECRET_KEY"] = os.getenv(
-    "FLASK_SECRET_KEY",
-    "dev-only-change-this"
-)
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
+
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError(
+        "FLASK_SECRET_KEY is missing. "
+        "Set it in your .env file or deployment environment."
+    )
 
 # Limit uploaded requests to 5 MB
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
