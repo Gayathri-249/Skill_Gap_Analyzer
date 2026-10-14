@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis History | Skill Gap Analyzer</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body class="history-page">
+
+    <main class="history-container">
+
+        <!-- Page heading -->
+        <header class="history-header">
+            <div>
+                <p class="history-eyebrow">YOUR PROGRESS</p>
+                <h1>Analysis History</h1>
+                <p class="history-subtitle">
+                    Review your previous resume analyses, skill gaps,
+                    and job-readiness scores.
+                </p>
+            </div>
+
+            <a class="history-back-button"
+               href="{{ url_for('home') }}">
+                <span aria-hidden="true">←</span>
+                Back to Analyzer
+            </a>
+        </header>
+
+        <!-- Summary cards -->
+        <section class="history-summary"
+                 aria-label="Analysis statistics">
+
+            <article class="history-stat-card">
+                <div class="history-stat-icon">📊</div>
+                <p>Total Analyses</p>
+                <h2 id="totalAnalyses">0</h2>
+                <span>Saved reports</span>
+            </article>
+
+            <article class="history-stat-card">
+                <div class="history-stat-icon">🎯</div>
+                <p>Average Coverage</p>
+                <h2 id="averageCoverage">0%</h2>
+                <span>Across saved reports</span>
+            </article>
+
+            <article class="history-stat-card">
+                <div class="history-stat-icon">🌟</div>
+                <p>Strong Matches</p>
+                <h2 id="strongMatches">0</h2>
+                <span>Coverage of 75% or more</span>
+            </article>
+        </section>
+
+        <!-- Search and filter -->
+        <section class="history-toolbar">
+            <div class="history-toolbar-heading">
+                <div>
+                    <h2>Previous Reports</h2>
+                    <p>Search and filter your saved analyses.</p>
+                </div>
+
+                <span class="history-count" id="visibleCount">
+                    0 reports
+                </span>
+            </div>
+
+            <div class="history-filters">
+                <div class="history-search-wrap">
+                    <label for="historySearch">Search reports</label>
+                    <input
+                        type="search"
+                        id="historySearch"
+                        placeholder="Search resume or job role..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="history-filter-wrap">
+                    <label for="coverageFilter">Coverage level</label>
+                    <select id="coverageFilter">
+                        <option value="all">All coverage levels</option>
+                        <option value="strong">Strong — 75% and above</option>
+                        <option value="medium">Medium — 40% to 74.99%</option>
+                        <option value="low">Low — below 40%</option>
+                    </select>
+                </div>
+
+                <button
+                    type="button"
+                    id="resetFilters"
+                    class="history-reset-button"
+                >
+                    Reset
+                </button>
+            </div>
+        </section>
+
+        <!-- Reports table -->
+        <section class="history-table-card">
+            {% if analyses %}
+
+            <div class="history-table-scroll">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Resume</th>
+                            <th>Target Role</th>
+                            <th>Coverage</th>
+                            <th>Matched Skills</th>
+                            <th>Missing Skills</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="historyTableBody">
+                        {% for item in analyses %}
+                        <tr
+                            class="history-data-row"
+                            data-resume="{{ item.resume_filename | default('', true) }}"
+                            data-role="{{ item.target_role | default('', true) }}"
+                            data-coverage="{{ item.coverage_percentage | default(0, true) }}"
+                        >
+                            <td>
+                                <span class="history-id">
+                                    #{{ item.id }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="history-resume-name">
+                                    {{ item.resume_filename or 'Unknown' }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="history-role">
+                                    {{ item.target_role or 'Not specified' }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% set coverage = item.coverage_percentage | default(0, true) | float %}
+                                <div class="coverage-cell">
+                                    <div class="coverage-label">
+                                        <strong>{{ "%.1f" | format(coverage) }}%</strong>
+
+                                        {% if coverage >= 75 %}
+                                            <span class="coverage-badge coverage-strong">
+                                                Strong
+                                            </span>
+                                        {% elif coverage >= 40 %}
+                                            <span class="coverage-badge coverage-medium">
+                                                Medium
+                                            </span>
+                                        {% else %}
+                                            <span class="coverage-badge coverage-low">
+                                                Low
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div
+                                        class="coverage-track"
+                                        role="progressbar"
+                                        aria-label="Skill coverage"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        aria-valuenow="{{ coverage }}"
+                                    >
+                                        <div
+                                            class="coverage-fill
+                                            {% if coverage >= 75 %}
+                                                fill-strong
+                                            {% elif coverage >= 40 %}
+                                                fill-medium
+                                            {% else %}
+                                                fill-low
+                                            {% endif %}"
+                                            style="width: {{ [100, [0, coverage] | max] | min }}%;"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="history-skill-list">
+                                    {% for skill in item.matched_skills or [] %}
+                                        <span class="history-skill matched-skill">
+                                            {{ skill }}
+                                        </span>
+                                    {% else %}
+                                        <span class="history-no-skill">
+                                            None
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="history-skill-list">
+                                    {% for skill in item.missing_skills or [] %}
+                                        <span class="history-skill missing-skill">
+                                            {{ skill }}
+                                        </span>
+                                    {% else %}
+                                        <span class="history-no-skill">
+                                            None
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+
+                            <td class="history-date">
+                                {{ item.created_at or 'N/A' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noFilteredResults" class="history-empty" hidden>
+                <div class="history-empty-icon">🔎</div>
+                <h3>No matching reports</h3>
+                <p>Try another search term or coverage filter.</p>
+            </div>
+
+            {% else %}
+
+            <div class="history-empty">
+                <div class="history-empty-icon">📂</div>
+                <h3>No analyses saved yet</h3>
+                <p>
+                    Upload a resume and analyze a target job role.
+                    Your saved report will appear here.
+                </p>
+                <a class="history-back-button"
+                   href="{{ url_for('home') }}">
+                    Start Your First Analysis
+                </a>
+            </div>
+
+            {% endif %}
+        </section>
+
+        <footer class="history-footer">
+            <p>Skill Gap Analyzer · Track your progress toward your target role.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rows = Array.from(
+                document.querySelectorAll(".history-data-row")
+            );
+
+            const searchInput = document.getElementById("historySearch");
+            const coverageFilter = document.getElementById("coverageFilter");
+            const resetButton = document.getElementById("resetFilters");
+            const visibleCount = document.getElementById("visibleCount");
+            const noFilteredResults = document.getElementById(
+                "noFilteredResults"
+            );
+
+            const totalAnalyses = document.getElementById("totalAnalyses");
+            const averageCoverage = document.getElementById("averageCoverage");
+            const strongMatches = document.getElementById("strongMatches");
+
+            const coverages = rows.map(function (row) {
+                const value = Number(row.dataset.coverage);
+                return Number.isFinite(value)
+                    ? Math.min(100, Math.max(0, value))
+                    : 0;
+            });
+
+            const total = rows.length;
+            const average = total
+                ? coverages.reduce((sum, value) => sum + value, 0) / total
+                : 0;
+
+            const strongCount = coverages.filter(
+                value => value >= 75
+            ).length;
+
+            totalAnalyses.textContent = total;
+            averageCoverage.textContent = average.toFixed(1) + "%";
+            strongMatches.textContent = strongCount;
+
+            function filterHistory() {
+                const query = searchInput.value.trim().toLowerCase();
+                const selectedLevel = coverageFilter.value;
+                let visible = 0;
+
+                rows.forEach(function (row) {
+                    const resume = (row.dataset.resume || "").toLowerCase();
+                    const role = (row.dataset.role || "").toLowerCase();
+                    const coverage = Number(row.dataset.coverage) || 0;
+
+                    const matchesSearch =
+                        resume.includes(query) || role.includes(query);
+
+                    let matchesCoverage = true;
+
+                    if (selectedLevel === "strong") {
+                        matchesCoverage = coverage >= 75;
+                    } else if (selectedLevel === "medium") {
+                        matchesCoverage =
+                            coverage >= 40 && coverage < 75;
+                    } else if (selectedLevel === "low") {
+                        matchesCoverage = coverage < 40;
+                    }
+
+                    const shouldShow = matchesSearch && matchesCoverage;
+                    row.hidden = !shouldShow;
+
+                    if (shouldShow) {
+                        visible++;
+                    }
+                });
+
+                visibleCount.textContent =
+                    visible + (visible === 1 ? " report" : " reports");
+
+                if (noFilteredResults) {
+                    noFilteredResults.hidden =
+                        visible !== 0 || rows.length === 0;
+                }
+            }
+
+            searchInput.addEventListener("input", filterHistory);
+            coverageFilter.addEventListener("change", filterHistory);
+
+            resetButton.addEventListener("click", function () {
+                searchInput.value = "";
+                coverageFilter.value = "all";
+                filterHistory();
+                searchInput.focus();
+            });
+
+            filterHistory();
+        });
+    </script>
+
+</body>
+</html>

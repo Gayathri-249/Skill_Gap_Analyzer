@@ -1,0 +1,34 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+.venv/
+venv/
+
+# Secrets
+.env
+.streamlit/secrets.toml
+
+# User data and uploads
+uploads/*
+!uploads/.gitkeep
+
+# Generated model/data files
+models/
+chroma_db/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing and logs
+.pytest_cache/
+.coverage
+*.log
+
+# IDE and operating system
+.vscode/
+.DS_Store
+Thumbs.db

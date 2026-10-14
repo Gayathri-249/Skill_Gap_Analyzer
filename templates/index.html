@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillNova | AI Skill Gap Analyzer</title>
+
+    <meta
+        name="description"
+        content="Analyze your resume, discover job skill gaps, and build a personalized AI-powered learning roadmap."
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body class="landing-page">
+
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <a class="brand" href="{{ url_for('home') }}">
+            <span class="brand-icon">✳</span>
+            <span>Skill<span class="brand-highlight">Nova</span></span>
+        </a>
+
+        <div class="nav-links">
+            <a href="#how-it-works">How it works</a>
+            <a href="#features">Features</a>
+            <a href="{{ url_for('history') }}">Analysis history ↗</a>
+        </div>
+
+        <a class="nav-cta" href="#analyzer">Analyze resume <span>↗</span></a>
+    </nav>
+
+    <main>
+
+        <!-- Hero -->
+        <section class="landing-hero">
+
+            <div class="hero-copy">
+                <div class="hero-badge">
+                    <span class="status-dot"></span>
+                    YOUR CAREER, WITH MORE CLARITY
+                </div>
+
+                <h1>
+                    Your next opportunity
+                    <span class="hero-gradient">starts with</span>
+                    <span class="hero-gradient">what you learn.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Discover what you already know, uncover the skills
+                    your dream role needs, and get a personalized plan
+                    to move forward.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="primary-cta" href="#analyzer">
+                        Analyze my resume <span>↗</span>
+                    </a>
+
+                    <a class="secondary-cta" href="#how-it-works">
+                        See how it works <span>↓</span>
+                    </a>
+                </div>
+
+                <div class="hero-trust">
+                    <div class="trust-symbols">
+                        <span>01</span>
+                        <span>02</span>
+                        <span>03</span>
+                    </div>
+                    <p>
+                        <strong>One resume.</strong>
+                        A clearer path to your target role.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Decorative preview -->
+            <div class="hero-visual" aria-label="Illustration of a skill analysis dashboard">
+
+                <div class="visual-glow"></div>
+
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+
+                <div class="floating-chip chip-top">
+                    <span class="chip-dot purple-dot"></span>
+                    Resume intelligence
+                </div>
+
+                <div class="preview-card">
+
+                    <div class="preview-top">
+                        <div>
+                            <span class="preview-overline">YOUR CAREER SNAPSHOT</span>
+                            <h3>Skill analysis</h3>
+                        </div>
+                        <span class="preview-menu">•••</span>
+                    </div>
+
+                    <div class="preview-score-row">
+                        <div class="preview-ring">
+                            <div class="preview-ring-inner">
+                                <strong>AI</strong>
+                                <span>POWERED</span>
+                            </div>
+                        </div>
+
+                        <div class="preview-score-text">
+                            <strong>Know your strengths.</strong>
+                            <p>Find your next learning opportunity.</p>
+                        </div>
+                    </div>
+
+                    <div class="preview-divider"></div>
+
+                    <div class="preview-section-heading">
+                        <span>SKILL LANDSCAPE</span>
+                        <span class="preview-live"><span></span> OVERVIEW</span>
+                    </div>
+
+                    <div class="preview-skill">
+                        <div>
+                            <span class="skill-indicator skill-purple"></span>
+                            <span>Existing skills</span>
+                        </div>
+                        <span class="preview-tag">MATCH</span>
+                    </div>
+
+                    <div class="preview-skill">
+                        <div>
+                            <span class="skill-indicator skill-pink"></span>
+                            <span>Skills to develop</span>
+                        </div>
+                        <span class="preview-tag preview-tag-pink">GROW</span>
+                    </div>
+
+                    <div class="preview-skill">
+                        <div>
+                            <span class="skill-indicator skill-blue"></span>
+                            <span>Learning roadmap</span>
+                        </div>
+                        <span class="preview-tag preview-tag-blue">PLAN</span>
+                    </div>
+
+                    <div class="preview-bottom">
+                        <span class="preview-star">✦</span>
+                        <span>Your next step starts here.</span>
+                    </div>
+
+                </div>
+
+                <div class="floating-chip chip-bottom">
+                    <span class="chip-spark">✦</span>
+                    Personalized learning
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Feature strip -->
+        <section class="feature-strip" id="features">
+            <div class="feature-strip-item">
+                <span class="feature-number">01</span>
+                <div>
+                    <strong>Skill discovery</strong>
+                    <p>Understand your current strengths.</p>
+                </div>
+            </div>
+
+            <div class="feature-strip-item">
+                <span class="feature-number">02</span>
+                <div>
+                    <strong>Gap identification</strong>
+                    <p>See what the target role requires.</p>
+                </div>
+            </div>
+
+            <div class="feature-strip-item">
+                <span class="feature-number">03</span>
+                <div>
+                    <strong>Learning roadmap</strong>
+                    <p>Turn skill gaps into next steps.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analyzer form -->
+        <section class="analyzer-section" id="analyzer">
+
+            <div class="section-heading">
+                <span class="section-eyebrow">LET'S GET STARTED</span>
+                <h2>Build your personal <span>skill map.</span></h2>
+                <p>
+                    Add your resume and target job description.
+                    We'll help you understand where you stand.
+                </p>
+            </div>
+
+            <div class="analyzer-layout">
+
+                <aside class="analyzer-aside">
+                    <div class="aside-icon">✳</div>
+
+                    <h3>Your next role is a goal. Let's make a plan.</h3>
+
+                    <p>
+                        Get a clearer picture of your strengths and
+                        identify skills you may want to develop.
+                    </p>
+
+                    <div class="aside-step">
+                        <span>1</span>
+                        <div>
+                            <strong>Upload your resume</strong>
+                            <p>Share your experience and skills.</p>
+                        </div>
+                    </div>
+
+                    <div class="aside-step">
+                        <span>2</span>
+                        <div>
+                            <strong>Add your target role</strong>
+                            <p>Tell us what opportunity you want.</p>
+                        </div>
+                    </div>
+
+                    <div class="aside-step">
+                        <span>3</span>
+                        <div>
+                            <strong>Explore your results</strong>
+                            <p>Review your skill gaps and learning plan.</p>
+                        </div>
+                    </div>
+
+                    <div class="aside-note">
+                        <span>ⓘ</span>
+                        Your results are estimates based on the
+                        skills identified in the submitted information.
+                    </div>
+                </aside>
+
+                <div class="analyzer-form-card">
+
+                    <div class="form-heading">
+                        <div>
+                            <span class="form-step-label">YOUR ANALYSIS</span>
+                            <h3>Tell us about your goal</h3>
+                        </div>
+                        <span class="form-spark">✦</span>
+                    </div>
+
+                    {% if error %}
+                        <div class="error" role="alert">{{ error }}</div>
+                    {% endif %}
+
+                    <form
+                        method="POST"
+                        enctype="multipart/form-data"
+                        id="skillAnalysisForm"
+                    >
+
+                        <div class="field-group">
+                            <label for="resume">01. Your resume</label>
+
+                            <label class="upload-zone" for="resume">
+                                <input
+                                    type="file"
+                                    id="resume"
+                                    name="resume"
+                                    accept=".pdf,.docx,.txt"
+                                    required
+                                >
+
+                                <span class="upload-icon">↑</span>
+                                <strong id="uploadTitle">Drop your resume here</strong>
+                                <span id="uploadDescription">
+                                    or click to browse your files
+                                </span>
+                                <span class="upload-formats">
+                                    PDF <span>·</span> DOCX <span>·</span> TXT
+                                    <span>·</span> MAX 5 MB
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="job_description">
+                                02. Target job description
+                            </label>
+
+                            <textarea
+                                id="job_description"
+                                name="job_description"
+                                rows="8"
+                                maxlength="20000"
+                                placeholder="Paste the job description here...
+
+Example:
+Required skills: Python, SQL, machine learning, NLP, and communication.
+
+Include the responsibilities and required qualifications for a more useful comparison."
+                                required
+                            ></textarea>
+
+                            <div class="textarea-footer">
+                                <span>Include skills and qualifications from the job listing.</span>
+                                <span id="descriptionCount">0 / 20000</span>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="analyze-button"
+                            id="analyzeButton"
+                        >
+                            <span>Analyze my skill gap</span>
+                            <span class="button-arrow">↗</span>
+                        </button>
+
+                        <p class="form-privacy-note">
+                            <span>✦</span>
+                            Your results are guidance, not a hiring decision.
+                        </p>
+
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section class="how-section" id="how-it-works">
+            <div class="section-heading">
+                <span class="section-eyebrow">SIMPLE BY DESIGN</span>
+                <h2>Three steps. <span>A clearer direction.</span></h2>
+                <p>
+                    Understand the gap between your current skills
+                    and the skills listed for your target role.
+                </p>
+            </div>
+
+            <div class="how-grid">
+                <article class="how-card">
+                    <span class="how-card-number">01</span>
+                    <div class="how-card-icon">↥</div>
+                    <h3>Share your resume</h3>
+                    <p>
+                        Start with your existing experience,
+                        education, projects, and skills.
+                    </p>
+                </article>
+
+                <article class="how-card">
+                    <span class="how-card-number">02</span>
+                    <div class="how-card-icon">⌕</div>
+                    <h3>Discover your gaps</h3>
+                    <p>
+                        Compare the skills identified in your resume
+                        against the target job description.
+                    </p>
+                </article>
+
+                <article class="how-card">
+                    <span class="how-card-number">03</span>
+                    <div class="how-card-icon">✧</div>
+                    <h3>Plan your growth</h3>
+                    <p>
+                        Explore prioritized skill recommendations
+                        and your personalized learning roadmap.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <a class="brand footer-brand" href="{{ url_for('home') }}">
+            <span class="brand-icon">✳</span>
+            <span>Skill<span class="brand-highlight">Nova</span></span>
+        </a>
+
+        <p>Built to make your next learning step clearer.</p>
+
+        <a href="{{ url_for('history') }}">View analysis history ↗</a>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const resumeInput = document.getElementById("resume");
+            const uploadTitle = document.getElementById("uploadTitle");
+            const uploadDescription = document.getElementById("uploadDescription");
+            const jobDescription = document.getElementById("job_description");
+            const descriptionCount = document.getElementById("descriptionCount");
+            const form = document.getElementById("skillAnalysisForm");
+            const analyzeButton = document.getElementById("analyzeButton");
+
+            const maxFileSize = 5 * 1024 * 1024;
+            const allowedExtensions = [".pdf", ".docx", ".txt"];
+
+            resumeInput.addEventListener("change", function () {
+                const file = resumeInput.files[0];
+
+                if (!file) {
+                    uploadTitle.textContent = "Drop your resume here";
+                    uploadDescription.textContent = "or click to browse your files";
+                    return;
+                }
+
+                const fileName = file.name.toLowerCase();
+                const isAllowed = allowedExtensions.some(
+                    extension => fileName.endsWith(extension)
+                );
+
+                if (!isAllowed) {
+                    alert("Please select a PDF, DOCX, or TXT file.");
+                    resumeInput.value = "";
+                    uploadTitle.textContent = "Drop your resume here";
+                    uploadDescription.textContent = "or click to browse your files";
+                    return;
+                }
+
+                if (file.size > maxFileSize) {
+                    alert("Your file exceeds the 5 MB limit. Please choose a smaller file.");
+                    resumeInput.value = "";
+                    uploadTitle.textContent = "Drop your resume here";
+                    uploadDescription.textContent = "or click to browse your files";
+                    return;
+                }
+
+                uploadTitle.textContent = file.name;
+                uploadDescription.textContent =
+                    (file.size / 1024).toFixed(1) + " KB · Ready to analyze";
+            });
+
+            function updateDescriptionCount() {
+                descriptionCount.textContent =
+                    jobDescription.value.length + " / 20000";
+            }
+
+            jobDescription.addEventListener("input", updateDescriptionCount);
+            updateDescriptionCount();
+
+            form.addEventListener("submit", function () {
+                analyzeButton.disabled = true;
+                analyzeButton.querySelector("span:first-child").textContent =
+                    "Analyzing your profile...";
+                analyzeButton.querySelector(".button-arrow").textContent = "…";
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1068 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkillNova | Your Skill Gap Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* SkillNova dashboard theme */
+        .result-page {
+            --sn-bg: #090b16;
+            --sn-panel: #131628;
+            --sn-panel-light: #191d34;
+            --sn-border: rgba(255,255,255,.09);
+            --sn-text: #f8fafc;
+            --sn-muted: #a1a8bd;
+            --sn-purple: #a78bfa;
+            --sn-pink: #ec4899;
+
+            background:
+                radial-gradient(ellipse at 80% 0%,
+                    rgba(124,58,237,.17), transparent 35%),
+                radial-gradient(ellipse at 0% 35%,
+                    rgba(59,130,246,.09), transparent 32%),
+                var(--sn-bg);
+            color: var(--sn-text);
+            min-height: 100vh;
+        }
+
+        .result-page .container {
+            max-width: 1200px;
+            width: calc(100% - 40px);
+            margin: auto;
+        }
+
+        .result-page .sn-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--sn-border);
+            margin-bottom: 34px;
+        }
+
+        .result-page .sn-brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--sn-text);
+            text-decoration: none;
+            letter-spacing: -.5px;
+        }
+
+        .result-page .sn-brand span {
+            color: var(--sn-purple);
+        }
+
+        .result-page .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .result-page .nav-links a,
+        .result-page .button-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: 1px solid var(--sn-border);
+            border-radius: 11px;
+            padding: 10px 15px;
+            color: var(--sn-text);
+            font-size: .9rem;
+            font-weight: 650;
+            transition: transform .2s ease, background .2s ease;
+        }
+
+        .result-page .nav-links a:hover,
+        .result-page .button-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-page .nav-links .nav-primary,
+        .result-page .primary-button {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border-color: transparent;
+            color: white;
+        }
+
+        .result-page .secondary-button {
+            background: rgba(255,255,255,.045);
+        }
+
+        .result-page .dashboard-hero {
+            padding: 26px 0 34px;
+            background: transparent;
+            text-align: left;
+        }
+
+        .result-page .eyebrow {
+            color: var(--sn-purple);
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+        }
+
+        .result-page .dashboard-hero h1 {
+            color: var(--sn-text);
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.12;
+            letter-spacing: -1.5px;
+            margin: 12px 0;
+        }
+
+        .result-page .dashboard-hero > p:not(.eyebrow) {
+            color: var(--sn-muted);
+            max-width: 650px;
+            line-height: 1.75;
+        }
+
+        .result-page .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .result-page .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin: 8px 0 24px;
+        }
+
+        .result-page .summary-card,
+        .result-page .panel {
+            background: linear-gradient(
+                145deg,
+                rgba(25,29,52,.96),
+                rgba(16,19,37,.96)
+            );
+            border: 1px solid var(--sn-border);
+            border-radius: 20px;
+            box-shadow: 0 15px 45px rgba(0,0,0,.15);
+        }
+
+        .result-page .summary-card {
+            padding: 22px;
+            min-width: 0;
+        }
+
+        .result-page .summary-icon {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: rgba(167,139,250,.13);
+            color: var(--sn-purple);
+            font-size: 1.3rem;
+            margin-bottom: 18px;
+        }
+
+        .result-page .summary-card > p {
+            color: var(--sn-muted);
+            font-size: .9rem;
+            margin: 0 0 8px;
+        }
+
+        .result-page .summary-card h2 {
+            color: var(--sn-text);
+            font-size: 2rem;
+            margin: 0 0 8px;
+        }
+
+        .result-page .summary-card > span {
+            color: var(--sn-muted);
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+        .result-page .matched-card .summary-icon {
+            color: #4ade80;
+            background: rgba(74,222,128,.1);
+        }
+
+        .result-page .missing-card .summary-icon {
+            color: #fb7185;
+            background: rgba(251,113,133,.1);
+        }
+
+        .result-page .required-card .summary-icon {
+            color: #60a5fa;
+            background: rgba(96,165,250,.1);
+        }
+
+        .result-page .panel {
+            padding: 28px;
+            margin: 22px 0;
+            min-width: 0;
+        }
+
+        .result-page .section-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .result-page .section-heading .eyebrow {
+            margin: 0 0 8px;
+        }
+
+        .result-page .section-heading h2 {
+            color: var(--sn-text);
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            margin: 0 0 9px;
+        }
+
+        .result-page .section-description,
+        .result-page .panel > p,
+        .result-page .coverage-details p {
+            color: var(--sn-muted);
+            line-height: 1.75;
+        }
+
+        .result-page .coverage-layout {
+            display: grid;
+            grid-template-columns: minmax(220px, .85fr) minmax(0, 1.15fr);
+            gap: 32px;
+            align-items: center;
+        }
+
+        .result-page .chart-box {
+            background: rgba(255,255,255,.025);
+            border: 1px solid var(--sn-border);
+            border-radius: 16px;
+            padding: 20px;
+            min-width: 0;
+        }
+
+        .result-page .doughnut-box {
+            max-width: 380px;
+            width: 100%;
+            margin: auto;
+        }
+
+        .result-page .large-percentage {
+            font-size: clamp(2.4rem, 6vw, 3.5rem);
+            font-weight: 850;
+            letter-spacing: -1.5px;
+            color: var(--sn-purple);
+            margin: 5px 0 18px;
+        }
+
+        .result-page .progress-track {
+            height: 10px;
+            overflow: hidden;
+            border-radius: 100px;
+            background: rgba(255,255,255,.09);
+            margin: 16px 0 22px;
+        }
+
+        .result-page .progress-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #7c3aed, #ec4899);
+            transition: width .5s ease;
+        }
+
+        .result-page .legend-list {
+            display: grid;
+            gap: 13px;
+        }
+
+        .result-page .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--sn-muted);
+        }
+
+        .result-page .legend-item strong {
+            margin-left: auto;
+            color: var(--sn-text);
+        }
+
+        .result-page .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .result-page .green-dot { background: #4ade80; }
+        .result-page .red-dot { background: #fb7185; }
+
+        .result-page .insight-note {
+            border-left: 3px solid var(--sn-purple);
+            padding: 10px 14px;
+            background: rgba(167,139,250,.07);
+            border-radius: 0 10px 10px 0;
+            margin-top: 22px;
+        }
+
+        .result-page .success-message {
+            padding: 12px 15px;
+            background: rgba(34,197,94,.09);
+            border: 1px solid rgba(74,222,128,.22);
+            border-radius: 12px;
+            color: #86efac;
+        }
+
+        .result-page .comparison-chart {
+            height: 360px;
+        }
+
+        .result-page .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .result-page .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 13px;
+            border-radius: 100px;
+            font-size: .88rem;
+            font-weight: 650;
+            border: 1px solid transparent;
+            overflow-wrap: anywhere;
+        }
+
+        .result-page .tag.matched {
+            color: #86efac;
+            background: rgba(34,197,94,.09);
+            border-color: rgba(74,222,128,.18);
+        }
+
+        .result-page .tag.missing {
+            color: #fda4af;
+            background: rgba(244,63,94,.09);
+            border-color: rgba(251,113,133,.2);
+        }
+
+        .result-page .count-badge,
+        .result-page .roadmap-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 100px;
+            font-size: .8rem;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .result-page .matched-badge {
+            color: #86efac;
+            background: rgba(34,197,94,.1);
+        }
+
+        .result-page .missing-badge {
+            color: #fda4af;
+            background: rgba(244,63,94,.1);
+        }
+
+        .result-page .roadmap-badge {
+            color: #ddd6fe;
+            background: rgba(139,92,246,.15);
+            border: 1px solid rgba(167,139,250,.2);
+        }
+
+        .result-page .recommendation-card {
+            padding: 20px;
+            margin: 14px 0;
+            border: 1px solid var(--sn-border);
+            background: rgba(255,255,255,.025);
+            border-radius: 15px;
+        }
+
+        .result-page .recommendation-card h3 {
+            color: var(--sn-text);
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .result-page .recommendation-card p {
+            color: var(--sn-muted);
+            line-height: 1.7;
+        }
+
+        .result-page .recommendation-card strong {
+            color: #e2e8f0;
+        }
+
+        .result-page .recommendation-card a {
+            color: #c4b5fd;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .result-page .recommendation-card a:hover {
+            text-decoration: underline;
+        }
+
+        .result-page .priority-label {
+            color: #fcd34d;
+        }
+
+        .result-page .roadmap-list {
+            display: grid;
+            gap: 16px;
+            margin-top: 22px;
+        }
+
+        .result-page .roadmap-week {
+            display: grid;
+            grid-template-columns: 58px minmax(0, 1fr);
+            gap: 18px;
+            padding: 22px;
+            border: 1px solid var(--sn-border);
+            border-radius: 17px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .result-page .week-number {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            font-weight: 850;
+        }
+
+        .result-page .week-content {
+            min-width: 0;
+        }
+
+        .result-page .week-content h3 {
+            color: var(--sn-text);
+            margin: 4px 0 14px;
+            font-size: 1.08rem;
+        }
+
+        .result-page .week-content p,
+        .result-page .week-content li {
+            color: var(--sn-muted);
+            line-height: 1.75;
+        }
+
+        .result-page .week-content strong {
+            color: #e2e8f0;
+        }
+
+        .result-page .week-content ul {
+            padding-left: 20px;
+        }
+
+        .result-page .project-box {
+            padding: 14px 16px;
+            margin: 16px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(167,139,250,.18);
+            background: rgba(124,58,237,.08);
+        }
+
+        .result-page .project-box p {
+            margin: 4px 0;
+        }
+
+        .result-page .disclaimer {
+            color: var(--sn-muted);
+            border: 1px solid var(--sn-border);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: .86rem;
+            line-height: 1.75;
+        }
+
+        .result-page .dashboard-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding: 25px 0 35px;
+            color: var(--sn-muted);
+            font-size: .88rem;
+        }
+
+        .result-page .back-link {
+            color: #c4b5fd;
+            text-decoration: none;
+            font-weight: 650;
+        }
+
+        .result-page .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .result-page .muted {
+            color: var(--sn-muted);
+        }
+
+        @media (max-width: 900px) {
+            .result-page .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .result-page .coverage-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .result-page .doughnut-box {
+                max-width: 340px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .result-page .container {
+                width: calc(100% - 24px);
+            }
+
+            .result-page .sn-nav {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .result-page .nav-links {
+                width: 100%;
+            }
+
+            .result-page .nav-links a {
+                flex: 1;
+            }
+
+            .result-page .summary-grid {
+                gap: 10px;
+            }
+
+            .result-page .summary-card {
+                padding: 16px;
+                border-radius: 15px;
+            }
+
+            .result-page .summary-card h2 {
+                font-size: 1.7rem;
+            }
+
+            .result-page .panel {
+                padding: 19px;
+                border-radius: 16px;
+            }
+
+            .result-page .comparison-chart {
+                height: 320px;
+                padding: 10px;
+            }
+
+            .result-page .roadmap-week {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 17px;
+            }
+
+            .result-page .dashboard-footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body class="result-page">
+<main class="container dashboard">
+
+    <nav class="sn-nav" aria-label="Main navigation">
+        <a href="{{ url_for('home') }}" class="sn-brand">
+            Skill<span>Nova</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">New Analysis</a>
+            <a href="{{ url_for('history') }}" class="nav-primary">
+                Analysis History
+            </a>
+        </div>
+    </nav>
+
+    <header class="hero dashboard-hero">
+        <p class="eyebrow">AI-POWERED CAREER INTELLIGENCE</p>
+        <h1>Your Skill Gap Dashboard</h1>
+        <p>
+            Understand your strengths, identify skill gaps, and build a
+            personalized learning path toward your target career.
+        </p>
+
+        <div class="hero-actions">
+            <a class="button-link secondary-button"
+               href="{{ url_for('home') }}">
+                ← Analyze Another Resume
+            </a>
+            <a class="button-link primary-button"
+               href="{{ url_for('history') }}">
+                View Analysis History →
+            </a>
+        </div>
+    </header>
+
+    <section class="summary-grid" aria-label="Analysis summary">
+        <article class="summary-card coverage-card">
+            <div class="summary-icon">◉</div>
+            <p>Skill Coverage</p>
+            <h2>{{ "%.2f"|format(result.coverage|float) }}%</h2>
+            <span>Required skills matched</span>
+        </article>
+
+        <article class="summary-card matched-card">
+            <div class="summary-icon">✓</div>
+            <p>Matched Skills</p>
+            <h2>{{ result.matched_skills|length }}</h2>
+            <span>Skills found in your resume</span>
+        </article>
+
+        <article class="summary-card missing-card">
+            <div class="summary-icon">↗</div>
+            <p>Skills to Develop</p>
+            <h2>{{ result.missing_skills|length }}</h2>
+            <span>Areas to focus on next</span>
+        </article>
+
+        <article class="summary-card required-card">
+            <div class="summary-icon">◎</div>
+            <p>Required Skills</p>
+            <h2>{{ result.required_skills|length }}</h2>
+            <span>Skills detected in the job description</span>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">YOUR OVERVIEW</p>
+                <h2>Skill Coverage Analysis</h2>
+                <p class="section-description">
+                    See how your detected skills compare with the target role.
+                </p>
+            </div>
+        </div>
+
+        <div class="coverage-layout">
+            <div class="chart-box doughnut-box">
+                <canvas id="coverageChart"
+                        role="img"
+                        aria-label="Doughnut chart showing matched and missing skills">
+                    Skill coverage chart
+                </canvas>
+            </div>
+
+            <div class="coverage-details">
+                <p class="muted">Overall coverage</p>
+                <div class="large-percentage">
+                    {{ "%.2f"|format(result.coverage|float) }}%
+                </div>
+
+                <div class="progress-track"
+                     role="progressbar"
+                     aria-label="Skill coverage"
+                     aria-valuenow="{{ result.coverage }}"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                    <div class="progress-fill"
+                         style="width: {{ [[result.coverage|float, 0]|max, 100]|min }}%;">
+                    </div>
+                </div>
+
+                <div class="legend-list">
+                    <div class="legend-item">
+                        <span class="legend-dot green-dot"></span>
+                        <span>Matched skills</span>
+                        <strong>{{ result.matched_skills|length }}</strong>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot red-dot"></span>
+                        <span>Missing skills</span>
+                        <strong>{{ result.missing_skills|length }}</strong>
+                    </div>
+                </div>
+
+                <p class="insight-note">
+                    {% if result.missing_skills %}
+                        Focus your next learning sessions on the missing skills below.
+                    {% else %}
+                        All detected required skills matched your resume. Keep
+                        practicing and validate your proficiency through projects.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        {% if result.analysis_id is defined %}
+        <p class="success-message">
+            ✓ Analysis saved successfully. Reference ID: #{{ result.analysis_id }}
+        </p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">SKILL BREAKDOWN</p>
+                <h2>Matched vs. Missing Skills</h2>
+                <p class="section-description">
+                    Compare the skills detected in your resume against the target job.
+                </p>
+            </div>
+        </div>
+
+        {% if result.required_skills %}
+        <div class="chart-box comparison-chart">
+            <canvas id="skillComparisonChart"
+                    role="img"
+                    aria-label="Bar chart comparing matched and missing skills">
+                Matched versus missing skills chart
+            </canvas>
+        </div>
+        {% else %}
+        <p>No required skills are available to chart.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">YOUR STRENGTHS</p>
+                <h2>Skills You Already Have</h2>
+            </div>
+            <span class="count-badge matched-badge">
+                {{ result.matched_skills|length }} matched
+            </span>
+        </div>
+
+        {% if result.matched_skills %}
+        <div class="tags">
+            {% for skill in result.matched_skills %}
+            <span class="tag matched">
+                <span aria-hidden="true">✓</span> {{ skill }}
+            </span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No matching skills were detected in your resume.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">GROWTH OPPORTUNITIES</p>
+                <h2>Skills to Develop</h2>
+            </div>
+            <span class="count-badge missing-badge">
+                {{ result.missing_skills|length }} to learn
+            </span>
+        </div>
+
+        {% if result.missing_skills %}
+        <div class="tags">
+            {% for skill in result.missing_skills %}
+            <span class="tag missing">+ {{ skill }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>All detected job skills matched your resume.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">YOUR NEXT STEPS</p>
+                <h2>Personalized Learning Recommendations</h2>
+            </div>
+        </div>
+
+        {% if result.recommendations %}
+            {% for item in result.recommendations %}
+            <article class="recommendation recommendation-card">
+                <h3>{{ item.skill|title }}</h3>
+
+                {% if item.priority is defined %}
+                <p>
+                    <strong>Priority:</strong>
+                    <span class="priority-label">{{ item.priority }}</span>
+                </p>
+                {% endif %}
+
+                {% if item.resource and item.url %}
+                <p><strong>Recommended resource</strong></p>
+                <a href="{{ item.url }}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    {{ item.resource }} ↗
+                </a>
+                {% endif %}
+
+                {% if item.supporting_skills is defined and item.supporting_skills %}
+                <p>
+                    <strong>Related topics:</strong>
+                    {{ item.supporting_skills|join(", ") }}
+                </p>
+                {% endif %}
+            </article>
+            {% endfor %}
+        {% else %}
+        <p>No additional recommendations are available.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel roadmap-panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">YOUR PERSONAL LEARNING PLAN</p>
+                <h2>AI-Powered Learning Roadmap</h2>
+            </div>
+            <span class="roadmap-badge">4-week plan</span>
+        </div>
+
+        <p>{{ result.ai_plan.summary }}</p>
+
+        {% if result.ai_plan.learning_plan %}
+        <div class="roadmap-list">
+            {% for week in result.ai_plan.learning_plan %}
+            <article class="roadmap-week">
+                <div class="week-number">W{{ week.week }}</div>
+
+                <div class="week-content">
+                    <h3>Week {{ week.week }}: {{ week.focus }}</h3>
+
+                    <p>
+                        <strong>Skills:</strong>
+                        {{ week.skills|join(", ") }}
+                    </p>
+
+                    <p><strong>Practice activities</strong></p>
+                    <ul>
+                        {% for activity in week.activities %}
+                        <li>{{ activity }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="project-box">
+                        <p><strong>Mini-project</strong></p>
+                        <p>{{ week.project }}</p>
+                    </div>
+
+                    <p>
+                        <strong>Expected outcome:</strong>
+                        {{ week.outcome }}
+                    </p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>
+            No additional learning weeks were generated. Use the recommendations
+            above to continue practicing.
+        </p>
+        {% endif %}
+    </section>
+
+    <p class="disclaimer">
+        This report uses keyword-based skill matching. Coverage estimates detected
+        skill overlap; it does not measure actual proficiency or identify every
+        equivalent skill. Verify results against the job description.
+    </p>
+
+    <footer class="dashboard-footer">
+        <a class="back-link" href="{{ url_for('home') }}">
+            ← Analyze Another Resume
+        </a>
+        <span>SkillNova · AI-Powered Skill Gap Analyzer</span>
+        <a class="back-link" href="{{ url_for('history') }}">
+            Analysis History →
+        </a>
+        <a href="{{ url_for('download_report') }}">
+            Download PDF Report
+        </a>
+    </footer>
+
+</main>
+
+<script>
+    // Values are supplied by the current Flask analysis result.
+    const matchedSkills = {{ result.matched_skills|tojson }};
+    const missingSkills = {{ result.missing_skills|tojson }};
+    const requiredSkills = {{ result.required_skills|tojson }};
+
+    const matchedCount = matchedSkills.length;
+    const missingCount = missingSkills.length;
+
+    // Shared chart styling for the dark SkillNova theme.
+    Chart.defaults.color = "#a1a8bd";
+    Chart.defaults.font.family =
+        "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+    // Coverage doughnut chart.
+    const coverageCanvas = document.getElementById("coverageChart");
+
+    if (coverageCanvas) {
+        new Chart(coverageCanvas, {
+            type: "doughnut",
+            data: {
+                labels: ["Matched skills", "Missing skills"],
+                datasets: [{
+                    data: [matchedCount, missingCount],
+                    backgroundColor: ["#4ade80", "#fb7185"],
+                    borderColor: ["#131628", "#131628"],
+                    borderWidth: 4,
+                    hoverOffset: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: "72%",
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            usePointStyle: true,
+                            padding: 18,
+                            color: "#cbd5e1"
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ": " + context.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Compare each required skill with the detected resume skills.
+    const normalizedMatched = new Set(
+        matchedSkills.map(skill => String(skill).toLowerCase())
+    );
+
+    const normalizedMissing = new Set(
+        missingSkills.map(skill => String(skill).toLowerCase())
+    );
+
+    const comparisonLabels = requiredSkills.map(
+        skill => String(skill)
+    );
+
+    const matchedValues = comparisonLabels.map(skill =>
+        normalizedMatched.has(skill.toLowerCase()) ? 1 : 0
+    );
+
+    const missingValues = comparisonLabels.map(skill =>
+        normalizedMissing.has(skill.toLowerCase()) ? 1 : 0
+    );
+
+    const comparisonCanvas =
+        document.getElementById("skillComparisonChart");
+
+    if (comparisonCanvas) {
+        new Chart(comparisonCanvas, {
+            type: "bar",
+            data: {
+                labels: comparisonLabels,
+                datasets: [
+                    {
+                        label: "Matched",
+                        data: matchedValues,
+                        backgroundColor: "#4ade80",
+                        borderRadius: 5,
+                        maxBarThickness: 22
+                    },
+                    {
+                        label: "Missing",
+                        data: missingValues,
+                        backgroundColor: "#fb7185",
+                        borderRadius: 5,
+                        maxBarThickness: 22
+                    }
+                ]
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 1,
+                        ticks: {
+                            stepSize: 1,
+                            color: "#a1a8bd",
+                            callback: value => value === 1 ? "Yes" : "No"
+                        },
+                        grid: {
+                            color: "rgba(255,255,255,.08)"
+                        },
+                        border: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: "#cbd5e1"
+                        },
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            usePointStyle: true,
+                            padding: 18,
+                            color: "#cbd5e1"
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ": " +
+                                    (context.raw === 1 ? "Yes" : "No");
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
