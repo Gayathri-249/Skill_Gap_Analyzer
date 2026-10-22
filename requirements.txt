@@ -16,3 +16,4 @@ jupyter
 ipykernel
 pypdf
 reportlab
+gunicorn
